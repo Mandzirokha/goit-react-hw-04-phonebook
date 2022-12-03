@@ -1,12 +1,35 @@
 import { Component } from 'react';
-// import { nanoid } from 'nanoid';
-import { GlobalStyle } from './GlobalStyle';
+import { nanoid } from 'nanoid';
+
+import { AddContactForm } from './AddContactForm/AddContactForm';
+import { ContactList } from './ContactList/ContactList';
 
 export class App extends Component {
+  static defaultProps = {
+    initialContacts: [],
+  };
+
+  state = {
+    contacts: this.props.initialContacts,
+    filter: '',
+    name: '',
+    number: '',
+  };
+
+  addContact = (name, number) => {
+    this.setState(prevState => ({
+      contacts: [...prevState.contacts, { id: nanoid(), name, number }],
+    }));
+  };
+
   render() {
+    const { contacts } = this.state;
     return (
       <>
-        <GlobalStyle />
+        <h1>PhoneBook</h1>
+        <AddContactForm onSubmit={this.addContact} />
+        <h2>Contacts</h2>
+        <ContactList contacts={contacts} />
       </>
     );
   }
