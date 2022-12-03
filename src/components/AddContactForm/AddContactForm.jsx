@@ -9,7 +9,7 @@ export const AddContactForm = ({ onSubmit }) => {
   return (
     <form autoComplete="off" onSubmit={handleSubmit}>
       <label htmlFor="name">
-        Name{' '}
+        Name
         <input
           type="text"
           name="name"

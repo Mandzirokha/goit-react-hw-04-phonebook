@@ -1,8 +1,8 @@
 import { Component } from 'react';
 import { nanoid } from 'nanoid';
-
 import { AddContactForm } from './AddContactForm/AddContactForm';
 import { ContactList } from './ContactList/ContactList';
+import { Filter } from './Filter/Filter';
 
 export class App extends Component {
   static defaultProps = {
@@ -22,80 +22,28 @@ export class App extends Component {
     }));
   };
 
+  handleChange = e => {
+    this.setState({ filter: e.target.value });
+  };
+
+  filterContacts = () => {
+    const { contacts, filter } = this.state;
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
+  };
+
   render() {
-    const { contacts } = this.state;
+    const { filter } = this.state;
+    const filteredContact = this.filterContacts();
     return (
       <>
         <h1>PhoneBook</h1>
         <AddContactForm onSubmit={this.addContact} />
         <h2>Contacts</h2>
-        <ContactList contacts={contacts} />
+        <Filter value={filter} onChange={this.handleChange} />
+        <ContactList contacts={filteredContact} />
       </>
     );
   }
 }
-
-// class App extends Component {
-//   state = {
-//     contacts: [],
-//     name: '',
-//   };
-
-//   handleChange = e => {
-//     this.setState({ name: e.target.value });
-//     // const { name, value } = e.target;
-//     // this.setState({ [name]: value });
-//   };
-
-//   // Викликається під час відправлення форми
-//   handleSubmit = e => {
-//     e.preventDefault();
-//     const { name } = e.target.elements;
-//     this.addContact(name);
-//     this.reset();
-//   };
-
-//   reset = () => {
-//     this.setState({ name: '' });
-//   };
-
-//   addContact = name => {
-//     this.setState(prevState => ({
-//       contacts: [...prevState.contacts, { id: nanoid(), name }],
-//     }));
-//   };
-
-//   render() {
-//     const { name, contacts } = this.state;
-
-//     return (
-//       <>
-//         <h2>Phonebook</h2>
-//         <form onSubmit={this.handleSubmit}>
-//           <label>
-//             Name
-//             <input
-//               type="text"
-//               placeholder="Enter name"
-//               value={name}
-//               onChange={this.handleChange}
-//             />
-//           </label>
-//           <button type="submit">Add contact</button>
-//         </form>
-//         <div>
-//           <h2>Contacts</h2>
-//           <ul>
-//             {contacts.map((contact, id) => {
-//               return (
-//                 <li key={id}>
-//                   <p>{contact}</p>
-//                 </li>
-//               );
-//             })}
-//           </ul>
-//         </div>
-//       </>
-//     );
-//   }
-// }
