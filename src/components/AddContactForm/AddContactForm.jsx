@@ -13,7 +13,13 @@ export class AddContactForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { name, number } = e.target.elements;
-    this.props.onSubmit(name.value, number.value);
+    this.props.addContact(name.value, number.value);
+    this.setState({ name: '', number: '' });
+    this.reset();
+  };
+
+  reset = () => {
+    this.setState({ name: '', number: '' });
   };
 
   render() {

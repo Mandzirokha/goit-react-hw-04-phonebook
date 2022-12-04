@@ -15,9 +15,14 @@ export class App extends Component {
   };
 
   addContact = (name, number) => {
-    this.setState(prevState => ({
-      contacts: [...prevState.contacts, { id: nanoid(), name, number }],
-    }));
+    const isNewName = this.state.contacts
+      .map(contact => contact.name)
+      .includes(name);
+    isNewName
+      ? alert(`${name} is already in contacts.`)
+      : this.setState(prevState => ({
+          contacts: [...prevState.contacts, { id: nanoid(), name, number }],
+        }));
   };
 
   handleChange = e => {
@@ -37,7 +42,7 @@ export class App extends Component {
     return (
       <>
         <h1>PhoneBook</h1>
-        <AddContactForm onSubmit={this.addContact} />
+        <AddContactForm addContact={this.addContact} />
         <h2>Contacts</h2>
         <Filter value={filter} onChange={this.handleChange} />
         <ContactList contacts={filteredContact} />
