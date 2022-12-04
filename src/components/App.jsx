@@ -12,8 +12,6 @@ export class App extends Component {
   state = {
     contacts: this.props.initialContacts,
     filter: '',
-    name: '',
-    number: '',
   };
 
   addContact = (name, number) => {
