@@ -5,6 +5,11 @@ import { Button, Form, Input } from './ContactForm.styled';
 export class ContactForm extends Component {
   state = { name: '', number: '' };
 
+  static propTypes = {
+    onSetState: PropTypes.func.isRequired,
+    onRepeatedName: PropTypes.func.isRequired,
+  };
+
   handleChange = e => {
     const { name, value } = e.target;
     this.setState({
@@ -15,8 +20,16 @@ export class ContactForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { name, number } = e.target.elements;
-    this.props.onAddContact(name.value, number.value);
-    this.setState({ name: '', number: '' });
+    this.addContact(name.value, number.value);
+  };
+
+  addContact = (name, number) => {
+    if (this.props.onRepeatedName(name)) {
+      alert(`${name} is already in contacts.`);
+      this.setState({ name: '' });
+      return;
+    }
+    this.props.onSetState(name, number);
     this.reset();
   };
 
@@ -53,7 +66,3 @@ export class ContactForm extends Component {
     );
   }
 }
-
-ContactForm.propTypes = {
-  onAddContact: PropTypes.func.isRequired,
-};

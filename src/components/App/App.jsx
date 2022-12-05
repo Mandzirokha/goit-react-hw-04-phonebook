@@ -6,24 +6,21 @@ import { Filter } from '../Filter/Filter';
 import { Box, Container, Title } from './App.styled';
 
 export class App extends Component {
-  static defaultProps = {
-    initialContacts: [],
-  };
-
   state = {
-    contacts: this.props.initialContacts,
+    contacts: [],
     filter: '',
   };
 
-  addContact = (name, number) => {
-    const isNewName = this.state.contacts
-      .map(contact => contact.name)
-      .includes(name);
-    isNewName
-      ? alert(`${name} is already in contacts.`)
-      : this.setState(prevState => ({
-          contacts: [...prevState.contacts, { id: nanoid(), name, number }],
-        }));
+  handleState = (name, number) => {
+    this.setState(prevState => ({
+      contacts: [...prevState.contacts, { id: nanoid(), name, number }],
+    }));
+  };
+
+  isRepeatedName = name => {
+    return this.state.contacts
+      .map(contact => contact.name.toLowerCase())
+      .includes(name.toLowerCase());
   };
 
   handleChange = e => {
@@ -51,7 +48,10 @@ export class App extends Component {
         <Container>
           <Container>
             <Title>PhoneBook</Title>
-            <ContactForm onAddContact={this.addContact} />
+            <ContactForm
+              onSetState={this.handleState}
+              onRepeatedName={this.isRepeatedName}
+            />
           </Container>
           <Container>
             <Title>Contacts</Title>

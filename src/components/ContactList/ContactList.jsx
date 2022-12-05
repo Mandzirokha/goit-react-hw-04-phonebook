@@ -1,22 +1,19 @@
 import PropTypes from 'prop-types';
-import { List, Li, Button } from './ContactList.styled';
-import { AiFillDelete } from 'react-icons/ai';
+import { ContactElement } from '../ContactElement/ContactElement';
 
 export const ContactList = ({ contacts, onDelete }) => {
   return (
-    <List>
-      {contacts.map(({ name, number, id }) => {
+    <ul>
+      {contacts.map(contact => {
         return (
-          <Li key={id}>
-            <p>{name}</p>
-            <p>{number}</p>
-            <Button type="button" onClick={() => onDelete(id)}>
-              <AiFillDelete />
-            </Button>
-          </Li>
+          <ContactElement
+            key={contact.id}
+            contact={contact}
+            onDelete={onDelete}
+          />
         );
       })}
-    </List>
+    </ul>
   );
 };
 

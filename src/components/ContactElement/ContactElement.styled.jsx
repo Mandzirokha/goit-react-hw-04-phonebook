@@ -1,8 +1,6 @@
 import styled from '@emotion/styled';
 
-export const List = styled.ul``;
-
-export const Li = styled.li`
+export const Item = styled.li`
   padding: 5px;
   margin-bottom: 2px;
   display: flex;
