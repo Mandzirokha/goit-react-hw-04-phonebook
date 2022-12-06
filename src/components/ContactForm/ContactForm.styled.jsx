@@ -1,7 +1,5 @@
 import styled from '@emotion/styled';
 
-export const Form = styled.form``;
-
 export const Input = styled.input`
   width: 100%;
   border: 2px solid rgba(0, 0, 0, 0);

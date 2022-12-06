@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
-import { Button, Form, Input } from './ContactForm.styled';
+import { Button, Input } from './ContactForm.styled';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as yup from 'yup';
 
 export class ContactForm extends Component {
   state = { name: '', number: '' };
@@ -10,59 +12,56 @@ export class ContactForm extends Component {
     onRepeatedName: PropTypes.func.isRequired,
   };
 
-  handleChange = e => {
-    const { name, value } = e.target;
-    this.setState({
-      [name]: value,
-    });
+  schema = yup.object().shape({
+    name: yup
+      .string()
+      .matches(
+        /^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/,
+        "Name can contain only letters, ', - and space. For example: Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan etc."
+      )
+      .required(),
+    number: yup
+      .string()
+      .matches(
+        /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/,
+        'Phone number should contain only numbers and it also could contain spaces, dash, parenthesis and startts with +'
+      )
+      .required(),
+  });
+
+  handleSubmit = (values, { resetForm }) => {
+    this.addContact(values);
+    resetForm();
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { name, number } = e.target.elements;
-    this.addContact(name.value, number.value);
-  };
-
-  addContact = (name, number) => {
+  addContact = ({ name, number }) => {
     if (this.props.onRepeatedName(name)) {
       alert(`${name} is already in contacts.`);
       this.setState({ name: '' });
       return;
     }
     this.props.onSetState(name, number);
-    this.reset();
-  };
-
-  reset = () => {
-    this.setState({ name: '', number: '' });
   };
 
   render() {
-    const { name, number } = this.state;
     return (
-      <Form autoComplete="off" onSubmit={this.handleSubmit}>
-        <Input
-          onChange={this.handleChange}
-          value={name}
-          type="text"
-          name="name"
-          placeholder="Name"
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          required
-        />
-        <Input
-          onChange={this.handleChange}
-          value={number}
-          type="tel"
-          name="number"
-          placeholder="Number"
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          required
-        />
-        <Button type="submit">Add contact</Button>
-      </Form>
+      <Formik
+        initialValues={{ name: '', number: '' }}
+        onSubmit={this.handleSubmit}
+        validationSchema={this.schema}
+      >
+        <Form autoComplete="off">
+          <label htmlFor="name">
+            <Field as={Input} type="text" name="name" placeholder="Name" />
+            <ErrorMessage name="name" component="div" />
+          </label>
+          <label htmlFor="number">
+            <Field as={Input} type="tel" name="number" placeholder="Number" />
+            <ErrorMessage name="number" component="div" />
+          </label>
+          <Button type="submit">Add contact</Button>
+        </Form>
+      </Formik>
     );
   }
 }
