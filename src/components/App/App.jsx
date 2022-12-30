@@ -1,84 +1,59 @@
-import { Component } from 'react';
 import { nanoid } from 'nanoid';
 import { ContactForm } from '../ContactForm/ContactForm';
 import { ContactList } from '../ContactList/ContactList';
 import { Filter } from '../Filter/Filter';
 import { Box, Container, Title } from './App.styled';
+import useLocalStorage from 'hooks/useLocalStorage';
+import { useState } from 'react';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
+export default function App() {
+  const [contacts, setContacts] = useLocalStorage('contacts', []);
+  const [filter, setFilter] = useState('');
+
+  const handleState = (name, number) => {
+    setContacts(prevState => [...prevState, { id: nanoid(), name, number }]);
   };
 
-  componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts);
-    if (parsedContacts) {
-      this.setState({ contacts: parsedContacts });
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const nextContacts = this.state.contacts;
-    const prevContacts = prevState.contacts;
-    if (nextContacts !== prevContacts) {
-      localStorage.setItem('contacts', JSON.stringify(nextContacts));
-    }
-  }
-
-  handleState = (name, number) => {
-    this.setState(prevState => ({
-      contacts: [...prevState.contacts, { id: nanoid(), name, number }],
-    }));
-  };
-
-  isRepeatedName = name => {
-    return this.state.contacts
+  const isRepeatedName = name => {
+    return contacts
       .map(contact => contact.name.toLowerCase())
       .includes(name.toLowerCase());
   };
 
-  handleChange = e => {
-    this.setState({ filter: e.target.value });
+  const handleChange = e => {
+    setFilter({ filter: e.target.value });
   };
 
-  filterContacts = () => {
-    const { contacts, filter } = this.state;
+  const filterContacts = () => {
     return contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter.toLowerCase())
     );
   };
 
-  deleteContact = contactId => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
-    }));
+  const deleteContact = contactId => {
+    setContacts(prevState =>
+      prevState.filter(contact => contact.id !== contactId)
+    );
   };
 
-  render() {
-    const { filter } = this.state;
-    const filteredContact = this.filterContacts();
-    return (
-      <Box>
+  const filteredContact = filterContacts();
+
+  return (
+    <Box>
+      <Container>
         <Container>
-          <Container>
-            <Title>PhoneBook</Title>
-            <ContactForm
-              onSetState={this.handleState}
-              onRepeatedName={this.isRepeatedName}
-            />
-          </Container>
-          <Container>
-            <Title>Contacts</Title>
-            <Filter value={filter} onChange={this.handleChange} />
-            <ContactList
-              contacts={filteredContact}
-              onDelete={this.deleteContact}
-            />
-          </Container>
+          <Title>PhoneBook</Title>
+          <ContactForm
+            onSetState={handleState}
+            onRepeatedName={isRepeatedName}
+          />
         </Container>
-      </Box>
-    );
-  }
+        <Container>
+          <Title>Contacts</Title>
+          <Filter value={filter} onChange={handleChange} />
+          <ContactList contacts={filteredContact} onDelete={deleteContact} />
+        </Container>
+      </Container>
+    </Box>
+  );
 }
